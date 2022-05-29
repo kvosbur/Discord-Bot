@@ -8,7 +8,7 @@ load_dotenv()
 
 token = os.getenv("DISCORD_TOKEN")
 server = os.getenv("TARGET_SERVER_NAME")
-channel = os.getenv("TARGET_CHANNEL_NAME")
+target_channel = os.getenv("TARGET_CHANNEL_NAME")
 message_to_send = ""
 
 client = discord.Client()
@@ -34,11 +34,12 @@ def get_channel(channels, target_name):
 
 @client.event
 async def on_ready():
+    global target_channel
     for guild in client.guilds:
         if guild.name == server:
             break
 
-    channel = get_channel(guild.channels, channel)
+    channel = get_channel(guild.channels, target_channel)
 
     # remove existing pins
     pinned_messages = await channel.pins()
