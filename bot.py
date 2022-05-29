@@ -44,6 +44,8 @@ actual_affix_icons = {
 
 affix_icons = actual_affix_icons
 
+default_icon = ":chipmunk:"
+
 message_extras = [
     { "extra_text": "+2" },
     { "extra_text": "+4" },
@@ -66,13 +68,17 @@ def start_client():
     client.run(token)
 
 
-def get_affix_data():
+def get_affix_data(server):
     r = requests.get("https://raider.io/api/v1/mythic-plus/affixes?region=us&locale=en")
     affix_details = r.json()["affix_details"]
     messages = []
     for index, affix in enumerate(affix_details):
-        icon = affix_icons.get(affix['name']) or ":grimacing:"
-        messages.append(f"{icon} {affix['name']} ({message_extras[index]['extra_text']})")
+        icon_name = affix_icons.get(affix['name'])
+        emoji = default_icon
+        for server_emoji in server.emojis:
+            if server_emoji.name == icon_name:
+                emoji = str(server_emoji)
+        messages.append(f"{emoji} {affix['name']} ({message_extras[index]['extra_text']})")
     return messages
 
 def next_weekday(d, weekday):
@@ -81,12 +87,12 @@ def next_weekday(d, weekday):
         days_ahead += 7
     return d + datetime.timedelta(days_ahead)
 
-def generate_message():
+def generate_message(server):
     today = datetime.date.today()
     end = next_weekday(today, 0)
     print(today)
     date_message = f"**For the week of:** {today.strftime('%m/%d/%y')} - {end.strftime('%m/%d/%y')}"
-    messages = get_affix_data()
+    messages = get_affix_data(server)
     return "\n".join([date_message] + messages)
 
 
