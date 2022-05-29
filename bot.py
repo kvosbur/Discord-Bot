@@ -1,6 +1,7 @@
 import os
 import requests
 import time
+import datetime
 
 import discord
 from dotenv import load_dotenv
@@ -8,7 +9,7 @@ from dotenv import load_dotenv
 test_affix_icons = {
     "Tyrannical": ":grinning:",
     "Fortified": ":smiley:",
-    "Bolserting": ":smile:",
+    "Bolstering": ":smile:",
     "Bursting": ":sweat_smile:",
     "Sanguine": ":joy:",
     "Spiteful": ":relaxed:",
@@ -24,24 +25,24 @@ test_affix_icons = {
 }
 
 actual_affix_icons = {
-    "Tyrannical": "",
-    "Fortified": "",
-    "Bolserting": "",
-    "Bursting": "",
-    "Sanguine": "",
-    "Spiteful": "",
-    "Inspiring": "",
-    "Raging": "",
-    "Explosive": "",
-    "Grievous": "",
-    "Necrotic": "",
-    "Volcanic": "",
-    "Quaking": "",
-    "Storming": "",
-    "Encrypted": ""
+    "Tyrannical": ":MTyrannical:",
+    "Fortified": ":MFortified:",
+    "Bolstering": ":MBolstering:",
+    "Bursting": ":MBursting:",
+    "Sanguine": ":MSanguine:",
+    "Spiteful": ":MSpiteful:",
+    "Inspiring": ":MInspiring",
+    "Raging": ":MRaging:",
+    "Explosive": ":MExplosive:",
+    "Grievous": ":MGrevious:",
+    "Necrotic": ":MNecrotic:",
+    "Volcanic": ":MVolcanic",
+    "Quaking": ":MQuaking:",
+    "Storming": ":MStorming:",
+    "Encrypted": ":MEncrypted:"
 }
 
-affix_icons = test_affix_icons
+affix_icons = actual_affix_icons
 
 message_extras = [
     { "extra_text": "+2" },
@@ -62,9 +63,6 @@ client = discord.Client()
 def start_client():
     global message_to_send
     print(time.time())
-    message_to_send = get_affix_data()
-    print("data retrieved")
-    print(message_to_send)
     client.run(token)
 
 
@@ -74,8 +72,22 @@ def get_affix_data():
     messages = []
     for index, affix in enumerate(affix_details):
         icon = affix_icons.get(affix['name']) or ":grimacing:"
-        messages.append(f"{icon} {affix['name']} {message_extras[index]['extra_text']} ({affix['wowhead_url']})")
-    return '\n'.join(messages)
+        messages.append(f"{icon} {affix['name']} ({message_extras[index]['extra_text']})")
+    return messages
+
+def next_weekday(d, weekday):
+    days_ahead = weekday - d.weekday()
+    if days_ahead <= 0: # Target day already happened this week
+        days_ahead += 7
+    return d + datetime.timedelta(days_ahead)
+
+def generate_message():
+    today = datetime.date.today()
+    end = next_weekday(today, 0)
+    print(today)
+    date_message = f"**For the week of:** {today.strftime('%m/%d/%y')} - {end.strftime('%m/%d/%y')}"
+    messages = get_affix_data()
+    return "\n".join([date_message] + messages)
 
 
 def get_channel(channels, target_name):
@@ -118,6 +130,8 @@ async def on_ready():
             await m.unpin()
 
     # pin new message
+    message_to_send = generate_message()
+    print(message_to_send)
     message = await channel.send(content=message_to_send)
     print(f"sent message: {message}")
     await message.pin()
