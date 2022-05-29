@@ -6,43 +6,23 @@ import datetime
 import discord
 from dotenv import load_dotenv
 
-test_affix_icons = {
-    "Tyrannical": ":grinning:",
-    "Fortified": ":smiley:",
-    "Bolstering": ":smile:",
-    "Bursting": ":sweat_smile:",
-    "Sanguine": ":joy:",
-    "Spiteful": ":relaxed:",
-    "Inspiring": ":blush:",
-    "Raging": ":innocent:",
-    "Explosive": ":wink:",
-    "Grievous": ":relieved:",
-    "Necrotic": ":heart_eyes:",
-    "Volcanic": ":kissing:",
-    "Quaking": ":yum:",
-    "Storming": ":stuck_out_tongue:",
-    "Encrypted": ":disappointed:"
+affix_icons = {
+    "Tyrannical": "MTyrannical",
+    "Fortified": "MFortified",
+    "Bolstering": "MBolstering",
+    "Bursting": "MBursting",
+    "Sanguine": "MSanguine",
+    "Spiteful": "MSpiteful",
+    "Inspiring": "MInspiring",
+    "Raging": "MRaging",
+    "Explosive": "MExplosive",
+    "Grievous": "MGrevious",
+    "Necrotic": "MNecrotic",
+    "Volcanic": "MVolcanic",
+    "Quaking": "MQuaking",
+    "Storming": "MStorming",
+    "Encrypted": "MEncrypted"
 }
-
-actual_affix_icons = {
-    "Tyrannical": ":MTyrannical:",
-    "Fortified": ":MFortified:",
-    "Bolstering": ":MBolstering:",
-    "Bursting": ":MBursting:",
-    "Sanguine": ":MSanguine:",
-    "Spiteful": ":MSpiteful:",
-    "Inspiring": ":MInspiring",
-    "Raging": ":MRaging:",
-    "Explosive": ":MExplosive:",
-    "Grievous": ":MGrevious:",
-    "Necrotic": ":MNecrotic:",
-    "Volcanic": ":MVolcanic",
-    "Quaking": ":MQuaking:",
-    "Storming": ":MStorming:",
-    "Encrypted": ":MEncrypted:"
-}
-
-affix_icons = actual_affix_icons
 
 default_icon = ":chipmunk:"
 
@@ -136,7 +116,7 @@ async def on_ready():
             await m.unpin()
 
     # pin new message
-    message_to_send = generate_message()
+    message_to_send = generate_message(guild)
     print(message_to_send)
     message = await channel.send(content=message_to_send)
     print(f"sent message: {message}")
